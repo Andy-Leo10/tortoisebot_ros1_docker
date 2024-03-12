@@ -1,0 +1,68 @@
+# START FROM SCRATCH
+# START FROM SCRATCH
+
+# Start from Ubuntu 20.04 base image
+FROM ubuntu:20.04
+
+# Minimal setup
+RUN apt-get update \
+    && apt-get install -y locales lsb-release gnupg
+ARG DEBIAN_FRONTEND=noninteractive
+RUN dpkg-reconfigure locales
+
+# Install ROS 1 Noetic
+RUN sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
+RUN apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ros-noetic-desktop-full
+RUN apt-get install -y --no-install-recommends python3-rosdep
+RUN rosdep init \
+    && rosdep fix-permissions \
+    && rosdep update
+RUN echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
+
+# Install Git
+RUN apt-get update && apt-get install -y git && apt-get install -y build-essential
+# Install catkin tools
+RUN apt-get update && apt-get install -y python3-catkin-tools
+
+# Install gazebo
+RUN apt-get update && apt-get install -y wget
+RUN echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list
+RUN wget https://packages.osrfoundation.org/gazebo.key -O - | apt-key add -
+RUN apt-get update
+RUN apt-get install -y gazebo11 libgazebo11-dev ros-noetic-gazebo-ros
+# Install ros-pkgs
+RUN apt-get install -y ros-noetic-gazebo-ros-pkgs
+# RUN apt-get install -y --no-install-recommends ros-noetic-gazebo-ros-control
+
+# Install gmapping: SLAM
+RUN apt-get install -y ros-noetic-slam-gmapping
+# Install rosbridge_server: ROS-Websocket bridge
+RUN apt-get install -y ros-noetic-rosbridge-server
+# Install web_video_server: ROS-Web video server
+RUN apt-get install -y ros-noetic-web-video-server
+# Install teleop_twist_keyboard: Keyboard teleoperation
+RUN apt-get install -y ros-noetic-teleop-twist-keyboard
+
+# Create an overlay Catkin workspace
+RUN /bin/bash -c "source /opt/ros/noetic/setup.bash \
+    && mkdir -p /catkin_ws/src \
+    && cd /catkin_ws \
+    && catkin_init_workspace"
+COPY /tortoisebot_gazebo/ /catkin_ws/src/tortoisebot_gazebo/
+COPY /tortoisebot_description/ /catkin_ws/src/tortoisebot_description/
+COPY /tortoisebot_control/ /catkin_ws/src/tortoisebot_control/
+COPY /tortoisebot_firmware/ /catkin_ws/src/tortoisebot_firmware/
+COPY /tortoisebot_navigation/ /catkin_ws/src/tortoisebot_navigation/
+COPY /tortoisebot_slam/ /catkin_ws/src/tortoisebot_slam/
+COPY /ydlidar_ros/ /catkin_ws/src/ydlidar_ros/
+COPY /course_web_dev_ros/ /catkin_ws/src/course_web_dev_ros/
+
+RUN /bin/bash -c "source /opt/ros/noetic/setup.bash \
+    && cd /catkin_ws \
+    && catkin build -j4 \
+    && source /catkin_ws/devel/setup.bash \
+    && echo 'source /catkin_ws/devel/setup.bash' >> ~/.bashrc"
+# Set up the work directory and entrypoint
+WORKDIR /catkin_ws
