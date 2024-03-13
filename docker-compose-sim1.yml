@@ -18,9 +18,10 @@ services:
 
     gazebo_server:
         hostname: gazebo
-        build:
-            context: .
-            dockerfile: tortoisebot-ros1-gazebo
+        # build:
+        #     context: .
+        #     dockerfile: tortoisebot-ros1-gazebo
+        image: andyleo10/andres.alamo-cp22:tortoisebot-ros1-gazebo
         environment:
             - ROS_MASTER_URI=http://roscore_server:11311
             - DISPLAY
@@ -32,9 +33,10 @@ services:
 
     slam_server:
         hostname: slam
-        build:
-            context: .
-            dockerfile: tortoisebot-ros1-slam
+        # build:
+        #     context: .
+        #     dockerfile: tortoisebot-ros1-slam
+        image: andyleo10/andres.alamo-cp22:tortoisebot-ros1-slam
         environment:
             - ROS_MASTER_URI=http://roscore_server:11311
             - DISPLAY
@@ -46,9 +48,10 @@ services:
 
     waypoints_server:
         hostname: waypoints
-        build:
-            context: .
-            dockerfile: tortoisebot-ros1-waypoints
+        # build:
+        #     context: .
+        #     dockerfile: tortoisebot-ros1-waypoints
+        image: andyleo10/andres.alamo-cp22:tortoisebot-ros1-waypoints
         environment:
             - ROS_MASTER_URI=http://roscore_server:11311
         networks:
@@ -57,9 +60,10 @@ services:
 
     webapp_server:
         hostname: webapp
-        build:
-            context: .
-            dockerfile: tortoisebot-ros1-webapp
+        # build:
+        #     context: .
+        #     dockerfile: tortoisebot-ros1-webapp
+        image: andyleo10/andres.alamo-cp22:tortoisebot-ros1-webapp
         environment:
             - ROS_MASTER_URI=http://roscore_server:11311
             - SLOT_ROSBRIDGE_PORT=20001
