@@ -22,11 +22,17 @@ COPY /course_web_dev_ros/ /catkin_ws/src/course_web_dev_ros/
 COPY /tortoisebot_control/ /catkin_ws/src/tortoisebot_control/
 COPY /tortoisebot_firmware/ /catkin_ws/src/tortoisebot_firmware/
 COPY /ydlidar_ros/ /catkin_ws/src/ydlidar_ros/
-
+# Build the workspace
 RUN /bin/bash -c "source /opt/ros/noetic/setup.bash \
     && cd /catkin_ws \
     && catkin build -j4 \
     && source /catkin_ws/devel/setup.bash \
     && echo 'source /catkin_ws/devel/setup.bash' >> ~/.bashrc"
-# Set up the work directory and entrypoint
+
+# Set up the work directory
 WORKDIR /catkin_ws
+# Set up the entrypoint
+CMD /bin/bash -c "source /catkin_ws/devel/setup.bash \
+    && rosrun course_web_dev_ros tortoisebot_action_server.py"
+
+    
