@@ -44,5 +44,16 @@ services:
             - ros-net
         command: /bin/bash -c "sleep 2 && source /opt/ros/noetic/setup.bash && source /catkin_ws/devel/setup.bash && roslaunch tortoisebot_slam mapping.launch"
 
+    waypoints_server:
+        hostname: waypoints
+        build:
+            context: .
+            dockerfile: tortoisebot-ros1-waypoints
+        environment:
+            - ROS_MASTER_URI=http://roscore_server:11311
+        networks:
+            - ros-net
+        command: /bin/bash -c "sleep 5 && source /opt/ros/noetic/setup.bash && source /catkin_ws/devel/setup.bash && rosrun course_web_dev_ros tortoisebot_action_server.py"
+
 networks:
     ros-net:

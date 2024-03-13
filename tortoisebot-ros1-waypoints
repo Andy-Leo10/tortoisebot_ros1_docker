@@ -31,8 +31,7 @@ RUN /bin/bash -c "source /opt/ros/noetic/setup.bash \
 
 # Set up the work directory
 WORKDIR /catkin_ws
+RUN chmod +x /catkin_ws/src/course_web_dev_ros/scripts/tortoisebot_action_server.py
 # Set up the entrypoint
-CMD /bin/bash -c "source /catkin_ws/devel/setup.bash \
-    && rosrun course_web_dev_ros tortoisebot_action_server.py"
-
-    
+# CMD /bin/bash -c "source /catkin_ws/devel/setup.bash \
+#     && rosrun course_web_dev_ros tortoisebot_action_server.py"
