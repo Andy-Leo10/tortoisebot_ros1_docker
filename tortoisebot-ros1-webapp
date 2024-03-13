@@ -34,7 +34,5 @@ RUN /bin/bash -c "source /opt/ros/noetic/setup.bash \
 # Set up the work directory
 WORKDIR /catkin_ws
 # Set up the entrypoint
-CMD /bin/bash -c "source /catkin_ws/devel/setup.bash \
-    && roslaunch course_web_dev_ros web.launch"
-
-    
+# CMD /bin/bash -c "source /catkin_ws/devel/setup.bash \
+#     && roslaunch course_web_dev_ros web.launch"
