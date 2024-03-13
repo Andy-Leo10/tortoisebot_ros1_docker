@@ -19,6 +19,7 @@ RUN /bin/bash -c "source /opt/ros/noetic/setup.bash \
     && cd /catkin_ws \
     && catkin_init_workspace"
 COPY /tortoisebot_slam/ /catkin_ws/src/tortoisebot_slam/
+COPY /tortoisebot_description/ /catkin_ws/src/tortoisebot_description/
 COPY /tortoisebot_control/ /catkin_ws/src/tortoisebot_control/
 COPY /tortoisebot_firmware/ /catkin_ws/src/tortoisebot_firmware/
 COPY /ydlidar_ros/ /catkin_ws/src/ydlidar_ros/
