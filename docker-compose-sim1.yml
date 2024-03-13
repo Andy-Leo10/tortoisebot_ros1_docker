@@ -28,6 +28,9 @@ services:
             - /tmp/.X11-unix:/tmp/.X11-unix
         networks:
             - ros-net
+        command: >
+            /bin/bash -c "sleep 2 && source /opt/ros/noetic/setup.bash && \
+            roslaunch tortoisebot_gazebo tortoisebot_playground.launch"
 
     slam_server:
         hostname: slam
@@ -41,6 +44,9 @@ services:
             - /tmp/.X11-unix:/tmp/.X11-unix
         networks:
             - ros-net
+        command: >
+            /bin/bash -c "sleep 10 && source /opt/ros/noetic/setup.bash && \
+            roslaunch roslaunch tortoisebot_slam mapping.launch"
 
 networks:
     ros-net:
