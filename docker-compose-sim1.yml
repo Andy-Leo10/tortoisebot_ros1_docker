@@ -66,9 +66,11 @@ services:
         networks:
             - ros-net
         ports: # works in this way -> host:container
-            - "9090:9090"
-            - "20001:20001"
-        command: /bin/bash -c "sleep 5 && source /opt/ros/noetic/setup.bash && source /catkin_ws/devel/setup.bash && roslaunch course_web_dev_ros web.launch"
+            - "9090:9090" # rosbridge_server port
+            - "20001:20001" # rosbridge_server websocket_external_port
+            - "11315:11315" # web_video_server port
+            - "7000:7000" # webapp port
+        command: /bin/bash -c "sleep 5 && source /opt/ros/noetic/setup.bash && source /catkin_ws/devel/setup.bash && roslaunch course_web_dev_ros web.launch & cd /catkin_ws/src/tortoisebot_webapp && python3 -m http.server 7000"
         restart: always
 
 networks:

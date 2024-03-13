@@ -12,6 +12,7 @@ RUN apt-get update && apt-get install -y \
     wget \
     ros-noetic-rosbridge-server \
     ros-noetic-web-video-server \
+    ros-noetic-tf2-web-republisher \
     ros-noetic-teleop-twist-keyboard
 
 # Create an overlay Catkin workspace
