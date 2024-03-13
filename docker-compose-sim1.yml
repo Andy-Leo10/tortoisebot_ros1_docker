@@ -7,7 +7,7 @@
 # - Waypoints Action Server
 # - Tortoisebot Webapp
 
-version: '1.0'
+version: '3.7'
 services:
     roscore_server:
         hostname: roscore
