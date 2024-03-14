@@ -1,0 +1,7 @@
+# Create a Docker compose file to start up all the 
+# previous containers. This Docker Compose file will 
+# start the following systems:
+
+# - starting all the real robot systems
+# - starting the mapping system
+
