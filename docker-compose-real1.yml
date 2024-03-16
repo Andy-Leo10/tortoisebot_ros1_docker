@@ -7,6 +7,22 @@
 
 version: '3.7'
 services:
+    roscore_server:
+        hostname: roscore
+        build:
+            context: .
+            dockerfile: tortoisebot-ros1-real
+        container_name: roscore_ros1_container
+        environment:
+            - DISPLAY
+            - ROS_MASTER_URI=http://192.168.18.122:11311
+            - ROS_HOSTNAME=192.168.18.122
+            - ROS_IP=192.168.18.122
+        command: roscore
+        network_mode: host
+        # networks:
+        #     - ros1-net-real
+
     bringup_ros1_server:
         hostname: bringup_ros1
         build:
@@ -25,10 +41,10 @@ services:
         tty: true
         network_mode: host
         # networks:
-        #     - ros2-net-real
+        #     - ros1-net-real
         command: /bin/bash -c "sleep 2 && source /opt/ros/noetic/setup.bash && source /catkin_ws/devel/setup.bash && roslaunch tortoisebot_gazebo tortoisebot_playground.launch"
 
 
 
 # networks:
-#     ros2-net-real:
+#     ros1-net-real:
