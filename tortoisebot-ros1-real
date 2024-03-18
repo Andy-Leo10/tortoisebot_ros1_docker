@@ -5,8 +5,6 @@
 # Start from Ubuntu 20.04 base image
 FROM ubuntu:20.04
 
-# Copy MMAL libraries from host
-COPY --from=raspbian/stretch /opt/vc /opt/vc
 # Set library path
 ENV LD_LIBRARY_PATH="/opt/vc/lib:${LD_LIBRARY_PATH}"
 
