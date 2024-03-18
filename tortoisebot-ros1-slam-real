@@ -41,7 +41,7 @@ RUN apt-get update && apt-get install -y \
     git \
     build-essential \
     python3-catkin-tools \
-    ros-noetic-v4l2-camera \
+    # ros-noetic-v4l2-camera \
     ros-noetic-rqt-image-view \
     ros-noetic-xacro \
     ros-noetic-urdf \
@@ -67,7 +67,8 @@ RUN /bin/bash -c "source /opt/ros/noetic/setup.bash \
 # Build the workspace
 RUN /bin/bash -c "source /opt/ros/noetic/setup.bash \
     && cd /catkin_ws \
-    && catkin build -j1 \
+    # && catkin build -j1 \
+    && catkin_make \
     && source /catkin_ws/devel/setup.bash \
     && echo 'source /catkin_ws/devel/setup.bash' >> ~/.bashrc"
 # Set up the work directory and entrypoint
