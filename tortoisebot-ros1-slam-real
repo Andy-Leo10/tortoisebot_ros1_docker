@@ -58,6 +58,7 @@ RUN apt-get update && apt-get install -y \
     ros-noetic-navigation \
     ros-noetic-slam-gmapping \
     ros-noetic-dwa-local-planner \
+    ros-noetic-ira-laser-tools \
     # ros-noetic-joint-state-publisher-gui \
     ros-noetic-teleop-twist-keyboard
 
@@ -74,5 +75,7 @@ RUN /bin/bash -c "source /opt/ros/noetic/setup.bash \
     && catkin_make \
     && source /catkin_ws/devel/setup.bash \
     && echo 'source /catkin_ws/devel/setup.bash' >> ~/.bashrc"
+# do cartographer setup ros noetic
+
 # Set up the work directory and entrypoint
 WORKDIR /catkin_ws

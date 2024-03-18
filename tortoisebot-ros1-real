@@ -10,6 +10,8 @@ RUN apt-get update \
     && apt-get install -y locales lsb-release gnupg
 ARG DEBIAN_FRONTEND=noninteractive
 RUN dpkg-reconfigure locales
+# set ros distribution
+ENV ROS_DISTRO noetic
 
 # Install ROS 1 Noetic
 RUN sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
@@ -43,9 +45,11 @@ RUN apt-get install -y ros-noetic-gazebo-ros-pkgs
 
 # Install necessary packages
 RUN apt-get update && apt-get install -y \
-    git \
     build-essential \
-    python3-catkin-tools \
+    python3-wstool \
+    ninja-build \
+    stow \
+    nano \
     # ros-noetic-v4l2-camera \
     ros-noetic-rqt-image-view \
     ros-noetic-xacro \
@@ -61,6 +65,7 @@ RUN apt-get update && apt-get install -y \
     ros-noetic-navigation \
     ros-noetic-slam-gmapping \
     ros-noetic-dwa-local-planner \
+    ros-noetic-ira-laser-tools \
     # ros-noetic-joint-state-publisher-gui \
     ros-noetic-teleop-twist-keyboard
 
@@ -77,5 +82,44 @@ RUN /bin/bash -c "source /opt/ros/noetic/setup.bash \
     && catkin_make \
     && source /catkin_ws/devel/setup.bash \
     && echo 'source /catkin_ws/devel/setup.bash' >> ~/.bashrc"
+
+# do cartographer setup for ros noetic
+# Create a new 'carto_ws' workspace inside the existing 'catkin_ws'
+RUN mkdir -p /catkin_ws/carto_ws/src
+WORKDIR /catkin_ws/carto_ws
+# Initialize the workspace and merge the cartographer_ros.rosinstall file
+RUN wstool init src
+RUN wstool merge -t src https://raw.githubusercontent.com/cartographer-project/cartographer_ros/master/cartographer_ros.rosinstall
+RUN wstool update -t src
+# Initialize rosdep and install dependencies
+# RUN rosdep init
+RUN rosdep update
+RUN rosdep install --from-paths src --ignore-src --rosdistro=${ROS_DISTRO} -y
+# Comment out the libabsl-dev dependency in the cartographer package.xml file
+RUN sed -i 's/<depend>libabsl-dev<\/depend>/<!-- <depend>libabsl-dev<\/depend> -->/g' src/cartographer/package.xml
+# move to carto_ws/src
+WORKDIR /catkin_ws/carto_ws/src
+# Clone the necessary repositories
+RUN git clone -b melodic-devel https://github.com/ros-perception/perception_pcl.git src/perception_pcl
+RUN git clone https://github.com/ros-perception/pcl_msgs src/pcl_msgs
+RUN git clone -b noetic-devel https://github.com/jsk-ros-pkg/geometry2_python3.git src/geometry2_python3
+# move back to carto_ws
+WORKDIR /catkin_ws/carto_ws
+# Install additional dependencies
+RUN rosdep install --from-paths src --ignore-src --rosdistro=${ROS_DISTRO} -y
+# Install abseil
+RUN src/cartographer/scripts/install_abseil.sh
+# Build the workspace of carto_ws
+RUN . /opt/ros/${ROS_DISTRO}/setup.sh && catkin_make_isolated --install --use-ninja -j1 -l1
+# Source the workspace of carto_ws
+RUN source install_isolated/setup.bash
+# overlay the catkin_ws with the carto_ws, delete the devel and build folders
+WORKDIR /catkin_ws
+RUN rm -rf build devel
+# redo catkin_make
+RUN catkin_make
+# Source the workspace of catkin_ws
+RUN echo 'source /catkin_ws/devel/setup.bash' >> ~/.bashrc
+
 # Set up the work directory and entrypoint
 WORKDIR /catkin_ws
