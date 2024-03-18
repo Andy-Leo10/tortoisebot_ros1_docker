@@ -5,9 +5,6 @@
 # Start from Ubuntu 20.04 base image
 FROM ubuntu:20.04
 
-# Set library path
-ENV LD_LIBRARY_PATH="/opt/vc/lib:${LD_LIBRARY_PATH}"
-
 # Minimal setup
 RUN apt-get update \
     && apt-get install -y locales lsb-release gnupg
@@ -29,6 +26,10 @@ RUN echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
 RUN apt-get update && apt-get install -y git && apt-get install -y build-essential
 # Install catkin tools
 RUN apt-get update && apt-get install -y python3-catkin-tools
+# for the camera node
+RUN apt-get update && apt-get install -y \
+    libraspberrypi-bin \
+    libraspberrypi-dev
 
 # Install gazebo
 RUN apt-get update && apt-get install -y wget
