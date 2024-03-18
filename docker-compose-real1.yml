@@ -18,7 +18,7 @@ services:
             - ROS_MASTER_URI=http://192.168.18.122:11311
             - ROS_HOSTNAME=192.168.18.122
             - ROS_IP=192.168.18.122
-        command: roscore
+        command: /bin/bash -c "source /opt/ros/noetic/setup.bash && roscore"
         network_mode: host
         # networks:
         #     - ros1-net-real
