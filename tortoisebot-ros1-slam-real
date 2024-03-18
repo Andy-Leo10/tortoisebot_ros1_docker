@@ -9,6 +9,8 @@ RUN apt-get update \
     && apt-get install -y locales lsb-release gnupg
 ARG DEBIAN_FRONTEND=noninteractive
 RUN dpkg-reconfigure locales
+# copy the 'vc' folder 
+COPY /vc/ /opt/vc/
 
 # Install ROS 1 Noetic
 RUN sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
