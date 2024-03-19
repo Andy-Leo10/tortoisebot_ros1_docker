@@ -69,6 +69,7 @@ RUN apt-get update && apt-get install -y \
     ros-noetic-slam-gmapping \
     ros-noetic-dwa-local-planner \
     ros-noetic-ira-laser-tools \
+    ros-noetic-compressed-image-transport \
     # ros-noetic-joint-state-publisher-gui \
     ros-noetic-teleop-twist-keyboard
 
