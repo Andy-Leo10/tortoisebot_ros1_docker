@@ -53,7 +53,8 @@ RUN apt-get update && apt-get install -y \
     ninja-build \
     stow \
     nano \
-    # ros-noetic-v4l2-camera \
+    ros-noetic-camera-info-manager \
+    ros-noetic-compressed-image-transport \
     ros-noetic-rqt-image-view \
     ros-noetic-xacro \
     ros-noetic-urdf \
@@ -69,7 +70,6 @@ RUN apt-get update && apt-get install -y \
     ros-noetic-slam-gmapping \
     ros-noetic-dwa-local-planner \
     ros-noetic-ira-laser-tools \
-    ros-noetic-compressed-image-transport \
     # ros-noetic-joint-state-publisher-gui \
     ros-noetic-teleop-twist-keyboard
 
@@ -106,9 +106,9 @@ RUN mkdir -p src && \
 
 # Clone the necessary repositories
 WORKDIR /catkin_ws/carto_ws/src
-RUN git clone -b melodic-devel https://github.com/ros-perception/perception_pcl.git src/perception_pcl && \
-    git clone https://github.com/ros-perception/pcl_msgs src/pcl_msgs && \
-    git clone -b noetic-devel https://github.com/jsk-ros-pkg/geometry2_python3.git src/geometry2_python3
+RUN git clone -b melodic-devel https://github.com/ros-perception/perception_pcl.git && \
+    git clone https://github.com/ros-perception/pcl_msgs && \
+    git clone -b noetic-devel https://github.com/jsk-ros-pkg/geometry2_python3.git 
 
 # Install additional dependencies, build the workspace, and source it
 WORKDIR /catkin_ws/carto_ws
