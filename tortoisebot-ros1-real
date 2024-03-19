@@ -84,7 +84,7 @@ RUN /bin/bash -c "source /opt/ros/noetic/setup.bash \
     && echo 'source /catkin_ws/devel/setup.bash' >> ~/.bashrc"
 
 # copy a launch file 'mapping.launch' for gmapping
-COPY /tortoisebot_slam/mapping.launch /catkin_ws/tortoisebot_slam/
+COPY /tortoisebot_slam/launch/mapping.launch /catkin_ws/tortoisebot_slam/launch/
 WORKDIR /catkin_ws
 
 
