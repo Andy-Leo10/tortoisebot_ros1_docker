@@ -3,7 +3,8 @@
 # the camera and laser
 
 # Start from Ubuntu 20.04 base image
-FROM ubuntu:20.04
+# FROM ubuntu:20.04
+FROM ros:noetic-ros-core
 
 # Minimal setup
 RUN apt-get update \
@@ -13,16 +14,16 @@ RUN dpkg-reconfigure locales
 # set ros distribution
 ENV ROS_DISTRO noetic
 
-# Install ROS 1 Noetic
-RUN sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
-RUN apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends ros-noetic-desktop-full
-RUN apt-get install -y --no-install-recommends python3-rosdep
-RUN rosdep init \
-    && rosdep fix-permissions \
-    && rosdep update
-RUN echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
+# # Install ROS 1 Noetic
+# RUN sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
+# RUN apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
+# RUN apt-get update \
+#     && apt-get install -y --no-install-recommends ros-noetic-desktop-full
+# RUN apt-get install -y --no-install-recommends python3-rosdep
+# RUN rosdep init \
+#     && rosdep fix-permissions \
+#     && rosdep update
+# RUN echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
 
 # Install Git
 RUN apt-get update && apt-get install -y git && apt-get install -y build-essential
@@ -33,15 +34,15 @@ RUN apt-get update && apt-get install -y \
     libraspberrypi-bin \
     libraspberrypi-dev
 
-# Install gazebo
-RUN apt-get update && apt-get install -y wget
-RUN echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list
-RUN wget https://packages.osrfoundation.org/gazebo.key -O - | apt-key add -
-RUN apt-get update
-RUN apt-get install -y gazebo11 libgazebo11-dev ros-noetic-gazebo-ros
-# Install ros-pkgs
-RUN apt-get install -y ros-noetic-gazebo-ros-pkgs
-# RUN apt-get install -y --no-install-recommends ros-noetic-gazebo-ros-control
+# # Install gazebo
+# RUN apt-get update && apt-get install -y wget
+# RUN echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list
+# RUN wget https://packages.osrfoundation.org/gazebo.key -O - | apt-key add -
+# RUN apt-get update
+# RUN apt-get install -y gazebo11 libgazebo11-dev ros-noetic-gazebo-ros
+# # Install ros-pkgs
+# RUN apt-get install -y ros-noetic-gazebo-ros-pkgs
+# # RUN apt-get install -y --no-install-recommends ros-noetic-gazebo-ros-control
 
 # Install necessary packages
 RUN apt-get update && apt-get install -y \
@@ -85,52 +86,48 @@ RUN /bin/bash -c "source /opt/ros/noetic/setup.bash \
     && source /catkin_ws/devel/setup.bash \
     && echo 'source /catkin_ws/devel/setup.bash' >> ~/.bashrc"
 
+
+
+
+# do cartographer setup for ros noetic
+# Set the working directory
+WORKDIR /catkin_ws/carto_ws
+
+# do cartographer setup for ros noetic
+# Initialize the workspace and merge the cartographer_ros.rosinstall file, install dependencies
+RUN mkdir -p src && \
+    wstool init src && \
+    wstool merge -t src https://raw.githubusercontent.com/cartographer-project/cartographer_ros/master/cartographer_ros.rosinstall && \
+    wstool update -t src && \
+    rosdep update && \
+    sed -i 's/<depend>libabsl-dev<\/depend>/<!-- <depend>libabsl-dev<\/depend> -->/g' src/cartographer/package.xml && \
+    rosdep install --from-paths src --ignore-src --rosdistro=${ROS_DISTRO} -y
+
+# Clone the necessary repositories
+WORKDIR /catkin_ws/carto_ws/src
+RUN git clone -b melodic-devel https://github.com/ros-perception/perception_pcl.git src/perception_pcl && \
+    git clone https://github.com/ros-perception/pcl_msgs src/pcl_msgs && \
+    git clone -b noetic-devel https://github.com/jsk-ros-pkg/geometry2_python3.git src/geometry2_python3
+
+# Install additional dependencies, build the workspace, and source it
+WORKDIR /catkin_ws/carto_ws
+RUN rosdep install --from-paths src --ignore-src --rosdistro=${ROS_DISTRO} -y && \
+    src/cartographer/scripts/install_abseil.sh && \
+    . /opt/ros/${ROS_DISTRO}/setup.sh && catkin_make_isolated --install --use-ninja -j1 -l1 && \
+    echo 'source /catkin_ws/carto_ws/install_isolated/setup.bash' >> ~/.bashrc
+
+# Overlay the catkin_ws with the carto_ws, delete the devel and build folders, and redo catkin_make
+WORKDIR /catkin_ws
+RUN rm -rf build devel && \
+    catkin_make && \
+    echo 'source /catkin_ws/devel/setup.bash' >> ~/.bashrc
+
 # copy a launch file 'mapping.launch' for gmapping
-COPY /tortoisebot_slam/launch/mapping.launch /catkin_ws/tortoisebot_slam/launch/
+COPY /tortoisebot_slam/launch/mapping1.launch /catkin_ws/tortoisebot_slam/launch/
+COPY /tortoisebot_slam/launch/mapping2.launch /catkin_ws/tortoisebot_slam/launch/
+COPY /tortoisebot_slam/launch/mapping3.launch /catkin_ws/tortoisebot_slam/launch/
 WORKDIR /catkin_ws
 
+# Set up the work directory and entrypoint
+WORKDIR /catkin_ws
 
-
-
-
-
-
-
-
-
-
-# # do cartographer setup for ros noetic
-# # Set the working directory
-# WORKDIR /catkin_ws/carto_ws
-
-# # do cartographer setup for ros noetic
-# # Initialize the workspace and merge the cartographer_ros.rosinstall file, install dependencies
-# RUN mkdir -p src && \
-#     wstool init src && \
-#     wstool merge -t src https://raw.githubusercontent.com/cartographer-project/cartographer_ros/master/cartographer_ros.rosinstall && \
-#     wstool update -t src && \
-#     rosdep update && \
-#     sed -i 's/<depend>libabsl-dev<\/depend>/<!-- <depend>libabsl-dev<\/depend> -->/g' src/cartographer/package.xml && \
-#     rosdep install --from-paths src --ignore-src --rosdistro=${ROS_DISTRO} -y
-
-# # Clone the necessary repositories
-# WORKDIR /catkin_ws/carto_ws/src
-# RUN git clone -b melodic-devel https://github.com/ros-perception/perception_pcl.git src/perception_pcl && \
-#     git clone https://github.com/ros-perception/pcl_msgs src/pcl_msgs && \
-#     git clone -b noetic-devel https://github.com/jsk-ros-pkg/geometry2_python3.git src/geometry2_python3
-
-# # Install additional dependencies, build the workspace, and source it
-# WORKDIR /catkin_ws/carto_ws
-# RUN rosdep install --from-paths src --ignore-src --rosdistro=${ROS_DISTRO} -y && \
-#     src/cartographer/scripts/install_abseil.sh && \
-#     . /opt/ros/${ROS_DISTRO}/setup.sh && catkin_make_isolated --install --use-ninja -j1 -l1 && \
-#     echo 'source /catkin_ws/carto_ws/install_isolated/setup.bash' >> ~/.bashrc
-
-# # Overlay the catkin_ws with the carto_ws, delete the devel and build folders, and redo catkin_make
-# WORKDIR /catkin_ws
-# RUN rm -rf build devel && \
-#     catkin_make && \
-#     echo 'source /catkin_ws/devel/setup.bash' >> ~/.bashrc
-
-# # Set up the work directory and entrypoint
-# WORKDIR /catkin_ws
