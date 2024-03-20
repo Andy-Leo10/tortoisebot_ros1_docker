@@ -8,11 +8,6 @@ FROM ros:noetic-ros-core
 
 # set ros distribution
 ENV ROS_DISTRO noetic
-
-RUN apt-get install -y --no-install-recommends python3-rosdep
-RUN rosdep init \
-    && rosdep fix-permissions \
-    && rosdep update
 RUN echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
 
 # Install necessary packages
