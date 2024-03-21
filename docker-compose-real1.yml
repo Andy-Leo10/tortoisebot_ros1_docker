@@ -9,9 +9,10 @@ version: '3.7'
 services:
     roscore_server:
         hostname: roscore
-        build:
-            context: .
-            dockerfile: tortoisebot-ros1-real
+        # build:
+        #     context: .
+        #     dockerfile: tortoisebot-ros1-real
+        image: andyleo10/andres.alamo-cp22:tortoisebot-ros1-real
         container_name: roscore_ros1_container
         environment:
             - DISPLAY
@@ -28,9 +29,10 @@ services:
 
     bringup_ros1_server:
         hostname: bringup_ros1
-        build:
-            context: .
-            dockerfile: tortoisebot-ros1-real
+        # build:
+        #     context: .
+        #     dockerfile: tortoisebot-ros1-real
+        image: andyleo10/andres.alamo-cp22:tortoisebot-ros1-real
         container_name: bringup_ros1_container
         environment:
             - DISPLAY
@@ -50,9 +52,10 @@ services:
 
     slam_ros1_server:
         hostname: slam_ros1
-        build:
-            context: .
-            dockerfile: tortoisebot-ros1-real
+        # build:
+        #     context: .
+        #     dockerfile: tortoisebot-ros1-real
+        image: andyleo10/andres.alamo-cp22:tortoisebot-ros1-real
         container_name: slam_ros1_container
         environment:
             - DISPLAY
