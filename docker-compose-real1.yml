@@ -65,7 +65,7 @@ services:
             - /tmp/.X11-unix:/tmp/.X11-unix
         privileged: true
         tty: true
-        command: /bin/bash -c "sleep 10 && source /opt/ros/noetic/setup.bash && source /catkin_ws/devel/setup.bash && roslaunch tortoisebot_slam mapping.launch"        
+        command: /bin/bash -c "sleep 10 && source /opt/ros/noetic/setup.bash && source /catkin_ws/devel/setup.bash && roslaunch tortoisebot_slam gmapping.launch"        
 
 # networks:
 #     ros1-net-real:
