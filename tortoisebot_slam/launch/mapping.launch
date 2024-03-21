@@ -1,4 +1,6 @@
 <launch>
+  
+  <node name="odom_publisher" pkg="tortoisebot_firmware" type="odom_pub.py" output="screen"/>
 
   <!-- Gmapping -->
   <node pkg="gmapping" type="slam_gmapping" name="tortoisebot_slam_gmapping" output="screen">
@@ -33,10 +35,9 @@
     <param name="llsamplestep" value="0.01"/>
     <param name="lasamplerange" value="0.005"/>
     <param name="lasamplestep" value="0.005"/>
-
-    </node>
+  </node>
 
     <!-- Start RViz with custom view -->
-    <node pkg="rviz" type="rviz" name="show_rviz" args="-d $(find tortoisebot_slam)/rviz/mapping.rviz"/>'
+    <!-- <node pkg="rviz" type="rviz" name="show_rviz" args="-d $(find tortoisebot_slam)/rviz/mapping.rviz"/>' -->
     
 </launch>
